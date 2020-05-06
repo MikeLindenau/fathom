@@ -1,12 +1,15 @@
 # Installation instructions for Fathom
 
-To install Fathom on your server, start by [downloading an official binary distribution from the releases page](https://github.com/usefathom/fathom/releases) and place it in `/usr/local/bin`.
+To install Fathom on your server: 
+
+1. [Download the latest Fathom release](https://github.com/usefathom/fathom/releases) suitable for your platform.
+2. Extract the archive to `/usr/local/bin`
 
 ```sh
-wget https://github.com/usefathom/fathom/releases/download/latest-development/fathom-linux-amd64
-mv fathom-linux-amd64 /usr/local/bin/fathom
+tar -C /usr/local/bin -xzf fathom_$VERSION_$OS_$ARCH.tar.gz
 chmod +x /usr/local/bin/fathom
 ```
+
 Confirm that Fathom is installed properly by running `fathom --version`
 
 ```sh
@@ -14,7 +17,9 @@ $ fathom --version
 Fathom version 1.0.0
 ```
 
-## Starting the Fathom web server
+## Configuring Fathom
+
+> This step is optional. By default, Fathom will use a SQLite database file in the current working directory.
 
 To run the Fathom web server we will need to [configure Fathom](Configuration.md) so that it can connect with your database of choice. 
 
@@ -29,6 +34,7 @@ Then, create a file named `.env` with the following contents.
 
 ```
 FATHOM_SERVER_ADDR=9000
+FATHOM_GZIP=true
 FATHOM_DEBUG=true
 FATHOM_DATABASE_DRIVER="sqlite3"
 FATHOM_DATABASE_NAME="fathom.db"
@@ -41,6 +47,8 @@ Check out the [configuration file documentation](Configuration.md) for all possi
 
 ## Register your admin user
 
+> This step is required.
+
 To register a user in the Fathom instance we just created, run the following command from the directory where your `.env` file is. 
 
 ```
@@ -51,7 +59,7 @@ fathom user add --email="john@email.com" --password="strong-password"
 
 ## Using NGINX with Fathom
 
-We recommend using NGINX with Fathom it, as it simplifies running multiple sites from the same server and handling SSL certificates with LetsEncrypt.
+We recommend using NGINX with Fathom, as it simplifies running multiple sites from the same server and handling SSL certificates with LetsEncrypt.
 
 Create a new file in `/etc/nginx/sites-enabled/my-fathom-site` with the following contents. Replace `my-fathom-site.com` with the domain you would like to use for accessing your Fathom installation.
 

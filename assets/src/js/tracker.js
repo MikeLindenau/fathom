@@ -128,6 +128,13 @@
 
     //  parse request, use canonical if there is one
     let req = window.location;
+
+    // do not track if not served over HTTP or HTTPS (eg from local filesystem)
+    if(req.host === '') {
+      return;
+    }
+
+    // find canonical URL
     let canonical = document.querySelector('link[rel="canonical"][href]');
     if(canonical) {
       let a = document.createElement('a');
@@ -166,6 +173,8 @@
 
     let url = config.trackerUrl || findTrackerUrl()
     let img = document.createElement('img');
+    img.setAttribute('alt', '');
+    img.setAttribute('aria-hidden', 'true');
     img.src = url + stringifyObject(d);
     img.addEventListener('load', function() {
       let now = new Date();

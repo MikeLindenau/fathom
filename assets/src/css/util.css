@@ -9,6 +9,16 @@
 	clear: both;
 }
 
+.ac {
+    text-transform: uppercase;
+}
+
+.sm {
+    font-size: 11px;
+    font-weight: 500;
+    color: #98a0a6;
+}
+
 @media(max-width: 600px) {
 	.hide-on-mobile { display: none !important; }
 }
@@ -58,5 +68,5 @@
 .fadeInDown { animation-name: fadeInDown; }
 
 .loading {
-	opacity: 0.8;
+	opacity: 0.6;
 }

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/url"
 	"strings"
+	"time"
 
 	"github.com/usefathom/fathom/pkg/datastore"
 	"github.com/usefathom/fathom/pkg/models"
@@ -13,6 +14,12 @@ import (
 
 type Aggregator struct {
 	database datastore.Datastore
+}
+
+type Report struct {
+	Processed int
+	PoolEmpty bool
+	Duration  time.Duration
 }
 
 type results struct {
@@ -29,18 +36,25 @@ func New(db datastore.Datastore) *Aggregator {
 }
 
 // Run processes the pageviews which are ready to be processed and adds them to daily aggregation
-func (agg *Aggregator) Run() int {
+func (agg *Aggregator) Run() Report {
+	startTime := time.Now()
+
 	// Get unprocessed pageviews
-	pageviews, err := agg.database.GetProcessablePageviews()
+	limit := 10000
+	pageviews, err := agg.database.GetProcessablePageviews(limit)
+	emptyReport := Report{
+		Processed: 0,
+		PoolEmpty: true,
+	}
 	if err != nil && err != datastore.ErrNoResults {
 		log.Error(err)
-		return 0
+		return emptyReport
 	}
 
 	//  Do we have anything to process?
 	n := len(pageviews)
 	if n == 0 {
-		return 0
+		return emptyReport
 	}
 
 	results := &results{
@@ -49,12 +63,10 @@ func (agg *Aggregator) Run() int {
 		Referrers: map[string]*models.ReferrerStats{},
 	}
 
-	log.Debugf("processing %d pageviews", len(pageviews))
-
 	sites, err := agg.database.GetSites()
 	if err != nil {
 		log.Error(err)
-		return 0
+		return emptyReport
 	}
 
 	// create map of public tracking ID's => site ID
@@ -70,7 +82,7 @@ func (agg *Aggregator) Run() int {
 	blacklist, err := newBlacklist()
 	if err != nil {
 		log.Error(err)
-		return 0
+		return emptyReport
 	}
 
 	// add each pageview to the various statistics we gather
@@ -146,7 +158,16 @@ func (agg *Aggregator) Run() int {
 		log.Error(err)
 	}
 
-	return n
+	endTime := time.Now()
+	dur := endTime.Sub(startTime)
+
+	report := Report{
+		Processed: n,
+		PoolEmpty: n < limit,
+		Duration:  dur,
+	}
+	log.Debugf("processed %d pageviews. took: %s, pool empty: %v", report.Processed, report.Duration, report.PoolEmpty)
+	return report
 }
 
 // parseReferrer parses the referrer string & normalizes it

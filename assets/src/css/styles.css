@@ -27,7 +27,6 @@ footer { font-size: 12px; color: #aaa; }
 a { transition: ease color .2s; }
 
 nav { position: relative; font-size: 12px; }
-
 nav a { color: #222; }
 footer nav a { color: #aaa; padding: 4px 0; display: inline-block; }
 footer nav a:hover { color: #222; }
@@ -50,6 +49,17 @@ nav .settings svg { width: 16px; display: inline-block; transition: ease all .2s
 nav .settings svg path { fill: #533feb; }
 nav .settings svg:hover { transform: rotate(45deg); }			
 
+nav.date-nav { margin: 32px 0 8px; }
+nav.date-nav ul { margin: 0 8px 0 0; border-radius: 4px; background: #e8ecee; padding: 8px 8px 8px 16px; display: inline-block; }
+nav.date-nav li { display: inline-block; padding: 0; }
+nav.date-nav li a,
+nav.date-nav li input { margin-right: 8px; color: #98a0a6; }
+nav.date-nav li input { background: transparent; border: 0; font-size: inherit; padding: 0; cursor: pointer; display: inline-block; width: 9.8ch; min-width: 60px; text-align: center; }
+nav.date-nav li.current a { color: #533feb; }
+nav.date-nav li a:hover { color: #2b2d2f; }
+nav.date-nav li span { margin-right: 8px; }
+
+/*
 .date-nav { margin-bottom: 12px; }
 .date-nav li a { position: relative; font-size: 12px; text-transform: uppercase; padding-right: 8px; }
 .date-nav li.custom { color: #aaa; float: right; margin: 0; }
@@ -65,7 +75,7 @@ nav .settings svg:hover { transform: rotate(45deg); }
 .date-nav li a:hover { color: #aaa; }
 .date-nav li.active a { padding-right: 8px; z-index: 1; color: #222; }
 .date-nav li.active a:after { content:""; background: #88ffc6; display: block; width: 100%; height: 3px; position: absolute; top: 6px; z-index: -1; margin: 0 0 0 -4px; }
-
+*/
 .box { background: #fff; border-radius: 4px; margin-bottom: 16px; padding: 16px; box-shadow: 0 2px 8px 0 rgba(34,34,34,.10); }
 
 .box-totals { background: #222; color: #ddd; }
@@ -83,6 +93,16 @@ nav .settings svg:hover { transform: rotate(45deg); }
 
 .table-row:after {  content: ""; background: #88ffc6; position: absolute; height: 34px; top: 0; left: -16px; opacity: .2; border-right: 2px solid #45ce8c; z-index: 0; } 
 .table-row.header:after { background: none; border: none; }
+
+.row.pag {
+	margin-top: 16px;
+	grid-template-columns: 1fr 1fr;
+	grid-gap: 4px;
+}
+.row.pag a {
+    color: #98a0a6;
+    font-size: 19px;
+}
 
 .modal-wrap { position: fixed; height: 100%; width: 100%; top: 0; left: 0; z-index: 1977; background: rgba(20,20,20,.8); display: grid; grid-template-columns: 1fr; align-items: center; }
 .modal { max-width: 480px; width: 100%; margin: 0 auto; text-align: left; background: #fff; z-index: 1978; height: auto; border-radius: 4px; box-shadow: 0 2px 8px 0 rgba(34,34,34,.10); overflow: hidden; }
@@ -108,8 +128,13 @@ div.delete a { color: red; }
 	body { padding: 0; }
 	header, footer { margin: 32px 0; }
 
-	nav li { display: inline-block; position: relative; margin-right: 16px; }
-	nav li.sites { width: 204px; margin-right: 0; }
+	.main-nav li,
+	footer li {
+		display: inline-block;
+		margin-right: 16px;
+	}
+
+	nav li.sites { display: inline-block; width: 204px; margin-right: 0; }
 	nav li.sites, nav li.settings { float: right; }
 	nav li.sites, nav li.sites.expanded { background-position: 184px 8px; }
 
@@ -123,9 +148,6 @@ div.delete a { color: red; }
 	.box-pages { grid-column: 2; grid-row: 2 ; }
 	.box-referrers { grid-column: 3; grid-row: 2; }
 
-	/* since we hide chart for views with less than a day worth of data, move tables to row 1 */
-	.ltday .box-pages, .ltday .box-referrers{ grid-row: 1; }
-
 	.half { display: grid; grid-template-columns: 1fr 1fr; grid-gap: 12px; align-items: center; }
 	.half div { text-align: right; }
 	.half div.submit { text-align: left; }
@@ -135,8 +157,6 @@ div.delete a { color: red; }
 	.total-numbers { font-size: 68px; font-weight: 200; letter-spacing: -.06em; text-align: left; }
 
 }
-
-
 
 
 .login-page.flex-rapper { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }

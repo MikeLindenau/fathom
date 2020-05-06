@@ -19,6 +19,8 @@ const (
 	MYSQL    = "mysql"
 	POSTGRES = "postgres"
 	SQLITE   = "sqlite3"
+
+	DATE_FORMAT = "2006-01-02 15:00:00"
 )
 
 type sqlstore struct {
@@ -46,7 +48,7 @@ func New(c *Config) *sqlstore {
 		log.Printf("Connected to %s database: %s on %s", c.Driver, c.Dbname(), c.Host)
 	}
 
-	// run migrations
+	// apply database migrations (if any)
 	db.Migrate()
 
 	return db

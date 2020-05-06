@@ -75,7 +75,7 @@ func (c *Collector) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// headers to prevent caching
 	w.Header().Set("Content-Type", "image/gif")
 	w.Header().Set("Expires", "Mon, 01 Jan 1990 00:00:00 GMT")
-	w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
+	w.Header().Set("Cache-Control", "no-store")
 	w.Header().Set("Pragma", "no-cache")
 
 	// response, 1x1 px transparent GIF
@@ -105,15 +105,22 @@ func (c *Collector) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Collector) aggregate() {
+	var report aggregator.Report
+
 	agg := aggregator.New(c.Store)
 	timeout := 1 * time.Minute
-
 	agg.Run()
 
 	for {
 		select {
 		case <-time.After(timeout):
-			agg.Run()
+			// run aggregator at least once
+			report = agg.Run()
+
+			// if pool is not empty yet, keep running
+			for !report.PoolEmpty {
+				report = agg.Run()
+			}
 		}
 	}
 }
@@ -184,6 +191,15 @@ func shouldCollect(r *http.Request) bool {
 	ua := user_agent.New(r.UserAgent())
 	if ua.Bot() {
 		return false
+	}
+
+	// discard if required query vars are missing
+	requiredQueryVars := []string{"id", "h", "p"}
+	q := r.URL.Query()
+	for _, k := range requiredQueryVars {
+		if q.Get(k) == "" {
+			return false
+		}
 	}
 
 	return true
